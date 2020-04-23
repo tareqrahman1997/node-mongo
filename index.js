@@ -12,9 +12,6 @@ const users = ['asad','monira','tareq','sagor'];
 app.get('/',(req,res) =>{
     res.send('thanks');
 })
-app.get('/fruit/:id' ,(req,res) =>{
-    res.send({fruit: 'banana' ,quantity:100,price:2000});
-})
 
 app.get('/users/:id',(req, res) =>{
     const id = req.params.id;
