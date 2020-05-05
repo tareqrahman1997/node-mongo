@@ -1,40 +1,68 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
 
-const users = ['asad','monira','tareq','sagor'];
 
-app.get('/',(req,res) =>{
-    res.send('thanks');
-})
 
-app.get('/users/:id',(req, res) =>{
-    const id = req.params.id;
-    const name = users[id];
-    res.send({id, name});
-})
+const uri = process.env.DB_PATH;
 
-//post 
-app.post('/addProduct',(req, res) =>{
 
-  const product = req.body;
+let client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+const users = ["Asad", 'Moin', 'Sabed', 'Susmita', 'Sohana', 'Sabana'];
 
-  console.log(product);
-  client.connect(err => {
-    const collection = client.db("databaseStore").collection("product");
-    collection.insertOne( product, (error, res)=>{
-        console.log("successfully inserted", res);
-        res.send(product);
-    });
-    client.close();
-  });
-  
+
+app.get('/products', (req, res) =>{
+    client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+    client.connect(err => {
+        const collection = client.db("databaseStore").collection("products");
+        collection.find().limit(10).toArray((err, documents)=>{
+            if(err){
+                console.log(err)
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(documents);
+            }
+        });
+        client.close();
+      });
 });
 
-app.listen(4200, () => console.log('listening to port 4200'));
+app.get('/product/:id', (req, res) =>{
+    const id = req.params.id;    
+    
+    const name = users[id];
+    res.send({id, name});
+});
+
+//,{useUnifiedTopology: true}
+//delete
+//update
+// post
+app.post('/addProduct', (req, res) => {
+    const product = req.body;
+    client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.insert(product, (err, result)=>{
+            if(err){
+                console.log(err)
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(result.ops[0]);
+            }
+        });
+        client.close();
+      });
+});
+
+const port = process.env.PORT || 4200;
+app.listen(port, () => console.log('Listening to port 4200'));
