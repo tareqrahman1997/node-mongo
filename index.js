@@ -19,29 +19,62 @@ const users = ["Asad", 'Moin', 'Sabed', 'Susmita', 'Sohana', 'Sabana'];
 
 
 app.get('/products', (req, res) =>{
-    client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+
+    client = new MongoClient(uri, { useNewUrlParser: true });
     client.connect(err => {
-        const collection = client.db("databaseStore").collection("products");
-        collection.find().limit(10).toArray((err, documents)=>{
+        const collection = client.db("onlineStore").collection("products");
+        collection.find().toArray((err, documents)=>{
             if(err){
                 console.log(err)
                 res.status(500).send({message:err});
             }
             else{
+                console.log(documents);
                 res.send(documents);
+            }
+        });
+     //   client.close();
+      });
+});
+
+app.get('/getProductsByKey', (req, res) =>{
+    const product = req.params.body;
+    const productKeys = req.body;
+
+    client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.find({key}).toArray((err, documents)=>{
+            if(err){
+                console.log(err);
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(documents[0]);
             }
         });
         client.close();
       });
 });
 
-app.get('/product/:id', (req, res) =>{
-    const id = req.params.id;    
-    
-    const name = users[id];
-    res.send({id, name});
-});
+app.post('/product/:key', (req, res) =>{
+    const key = req.params.key;
 
+    client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.find({key}).toArray((err, documents)=>{
+            if(err){
+                console.log(err)
+                res.status(500).send({message:err});
+            }
+            else{
+                res.send(documents[0]);
+            }
+        });
+        client.close();
+      });
+});
 //,{useUnifiedTopology: true}
 //delete
 //update
@@ -49,18 +82,20 @@ app.get('/product/:id', (req, res) =>{
 app.post('/addProduct', (req, res) => {
     const product = req.body;
     client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
+    console.log(product);
     client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
-        collection.insert(product, (err, result)=>{
+        collection.insertOne(product, (err, result)=>{
             if(err){
                 console.log(err)
                 res.status(500).send({message:err});
             }
             else{
+                console.log(result.ops[0]);
                 res.send(result.ops[0]);
             }
         });
-        client.close();
+      //  client.close();
       });
 });
 
