@@ -74,9 +74,11 @@ app.post('/getProductsByKey', (req, res) =>{
       });
 });
 
-app.get('/', function(req, res) {
-    res.sendFile(path.join(__dirname + '/index.html'));
-});
+// app.get('/', function(req, res) {
+//     res.sendFile(path.join(__dirname + '/index.html'));
+// });
+const publicpath = path.join(__dirname, 'public');
+app.use(express.static(publicpath));
 
 app.get('/product/:key', (req, res) => {
     const key = req.params.key;
