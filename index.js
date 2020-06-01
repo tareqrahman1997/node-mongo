@@ -85,7 +85,7 @@ app.get('/product/:key', (req, res) => {
     client = new MongoClient(uri, { useNewUrlParser: true },{useUnifiedTopology: true});
     client.connect(err => {
         const collection = client.db("onlineStore").collection("products");
-        collection.findOne({key},(err, documents)=>{
+        collection.find({key},(err, documents)=>{
             if(err){
                 console.log(err)
                 res.status(500).send({message:err});
