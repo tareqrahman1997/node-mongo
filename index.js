@@ -19,6 +19,11 @@ let client = new MongoClient(uri, { useNewUrlParser: true , useUnifiedTopology: 
 const users = ["Asad", 'Moin', 'Sabed', 'Susmita', 'Sohana', 'Sabana'];
 
 
+app.get('/login', function(req, res){
+   res.sendfile(__dirname + '/public/login.html');
+   
+  });
+
 app.get('/products', (req, res) =>{
 
     let client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -79,6 +84,7 @@ app.post('/getProductsByKey', (req, res) =>{
 // });
 const publicpath = path.join(__dirname, 'public');
 app.use(express.static(publicpath));
+
 
 app.get('/product/:key', (req, res) => {
     const key = req.params.key;
